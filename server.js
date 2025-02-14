@@ -150,7 +150,7 @@ const eventRoutes= require("./Routes/event_route");
 const { startStatusUpdater } = require("./Model/status_up");
 
 const app = express();
-// app.use(cors('*'));
+
 app.use(cors({
     origin: '*', // Allow all origins (not recommended for production)
     methods: ["GET", "POST", "PUT", "DELETE"],

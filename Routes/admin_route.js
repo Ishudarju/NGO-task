@@ -8,4 +8,6 @@ router.post("/login",adminLogin);
 router.post("/reset-password", resetPassword);
 router.post("/update-password",updatePassword);
 
+// router.post("login")
+
 module.exports = router;
