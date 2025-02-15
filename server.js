@@ -147,6 +147,7 @@ const paymentRoutes = require("./Routes/payment_route");
 const authroutes= require("./Routes/admin_route");
 const newsRoutes= require("./Routes/news_route");
 const eventRoutes= require("./Routes/event_route");
+const contactRoutes= require("./Routes/contact_route");
 const { startStatusUpdater } = require("./Model/status_up");
 
 const app = express();
@@ -169,6 +170,7 @@ app.use("/pay", paymentRoutes);
 app.use("/admin", authroutes);
 app.use("/news",newsRoutes);
 app.use("/event",eventRoutes);
+app.use("/contact",contactRoutes);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
