@@ -30,7 +30,9 @@ exports.adminLogin = (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
 
     const token = jwt.sign(
-      { id: admin.id, role: admin.role, email: admin.email, name: admin.name },
+      { id: admin.id, role: admin.role, email: admin.email, name: admin.name
+        
+       },
       process.env.JWT_SECRET,
       { expiresIn: "5h" }
     );
