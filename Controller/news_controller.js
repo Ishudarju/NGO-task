@@ -143,7 +143,7 @@ exports.createNews = async (req, res) => {
             return res.status(400).json({ error: 'All fields are required' });
         }
 
-        const image = req.file.path;
+        const image = req.file.filename;
         const result = await News.create({ title, text, description, image });
         res.status(201).json(result);
     } catch (error) {

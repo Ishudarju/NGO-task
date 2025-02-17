@@ -37,7 +37,7 @@ router.get("/AllEvent", eventController.getAllEvents);
 router.get("/events/:id", eventController.getEventById);
 router.post("/createEve", upload.single("image"), eventController.createEvent);
 router.put("/updateEve", upload.single("image"), eventController.updateEvent);
-router.delete("/delEve", eventController.deleteEvent);
+router.delete("/delEve/:id", eventController.deleteEvent);
 router.get("/update-status", eventController.updateEventStatus);
 
 module.exports = router;
