@@ -2,6 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const eventController = require("../Controller/event_controller");
+const { verifyToken, isAdmin } = require('../Middleware/auth');
 
 const router = express.Router();
 
@@ -34,10 +35,10 @@ const upload = multer({
 // Event Routes
 router.get("/AllEvent", eventController.getAllEvents);
 // Route to get an event by ID
-router.get("/events/:id", eventController.getEventById);
-router.post("/createEve", upload.single("image"), eventController.createEvent);
-router.put("/updateEve", upload.single("image"), eventController.updateEvent);
-router.delete("/delEve/:id", eventController.deleteEvent);
-router.get("/update-status", eventController.updateEventStatus);
+router.get("/events/:id",eventController.getEventById);
+router.post("/createEve", verifyToken, isAdmin, upload.single("image"), eventController.createEvent);
+router.put("/updateEve",  verifyToken, isAdmin,upload.single("image"), eventController.updateEvent);
+router.delete("/delEve/:id",  verifyToken, isAdmin,eventController.deleteEvent);
+router.get("/update-status",  verifyToken, isAdmin,eventController.updateEventStatus);
 
 module.exports = router;

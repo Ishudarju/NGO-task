@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const { savePayment } = require("../Model/payment_model");
+const { savePayment,getAllPayments,getPaymentById  } = require("../Model/payment_model");
 
 const generateHash = (data, salt) => 
 {
@@ -10,8 +10,11 @@ const generateHash = (data, salt) =>
 // ✅ Initiate Payment (Sends Request to PayU)
 const initiatePayment = async (req, res) => {
   try {
-    const { name, email, phone, donationAmount } = req.body;
-    if (!name || !email || !phone || !donationAmount) 
+    const { name, email, phone, donationAmount ,description} = req.body;
+
+    console.log("payment",req.body);
+
+    if (!name || !email || !phone || !donationAmount ||!description) 
     {
       return res.status(400).json({ error: "Missing required fields" });
     }
@@ -24,13 +27,15 @@ const initiatePayment = async (req, res) => {
       key: process.env.PAYU_MERCHANT_KEY,
       txnid,
       amount: donationAmount,
-      productinfo: "Donation",
+      productinfo: description,
       firstname: name,
       email,
       phone,
       surl: successUrl,
       furl: failureUrl,
     };
+
+   console.log("paydata",paymentData); 
 
     // ✅ Generate Hash using Merchant Key and Salt
     paymentData.hash = generateHash(paymentData, process.env.PAYU_SALT);
@@ -69,7 +74,7 @@ const paymentResponse = async (req, res) => {
     }
 
     // ✅ Save Payment in Database
-    await savePayment({ txnid, status, amount, name: firstname, email, phone });
+    await savePayment({ txnid, status, amount, name: firstname, email, phone , productinfo});
 
     console.log("✅ Payment successfully saved!");
     return res.redirect("http://localhost:5173/success");
@@ -80,4 +85,66 @@ const paymentResponse = async (req, res) => {
   }
 };
 
-module.exports = { initiatePayment, paymentResponse };
+
+const getAllPaymentsController = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;  // Default to page 1
+    const limit = parseInt(req.query.limit) || 10; // Default limit to 10
+
+    const { payments, total } = await getAllPayments(page, limit);
+
+    res.json({
+      status: true,
+      payments,
+      total,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+    });
+  } catch (error) {
+    console.error("❌ Error fetching payments:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+
+
+// // ✅ Get all payments
+// const getAllPaymentsController = async (req, res) => {
+//   try {
+//     const payments = await getAllPayments();
+//     res.json({ status: true, payments });
+//   } catch (error) {
+//     console.error("❌ Error fetching payments:", error);
+//     res.status(500).json({ error: "Server error" });
+//   }
+// };
+
+// ✅ Get payment by ID
+const getPaymentByIdController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const payment = await getPaymentById(id);
+    if (!payment) {
+      return res.status(404).json({ error: "Payment not found" });
+    }
+    res.json({ status: true, payment });
+  } catch (error) {
+    console.error("❌ Error fetching payment by ID:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+module.exports = { initiatePayment, paymentResponse,getPaymentByIdController,getAllPaymentsController };
+
+
+
+
+
+
+
+
+
+
+
+
+

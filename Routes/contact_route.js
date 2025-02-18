@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const ContactController = require("../Controller/contact_controller");
+const { verifyToken, isAdmin } = require('../Middleware/auth');
 
 
 router.post("/contacts", ContactController.createContact);
