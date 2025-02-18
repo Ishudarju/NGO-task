@@ -2,6 +2,46 @@ const db = require("../DB/db_connection");
 
 
 const Event = {
+
+    createEvent: (eventData, callback) => {
+        const { name, date_time, venue, description, image } = eventData;
+        const status = "open";
+
+        const sql = `INSERT INTO events (name, date_time, venue, description, image, status, created_at) 
+                     VALUES (?, ?, ?, ?, ?, ?, NOW())`;
+
+        db.query(sql, [name, date_time, venue, description, image, status], callback);
+    },
+
+    updateEventStatus: () => {
+        const sql = `
+             UPDATE events 
+            SET status = 
+                CASE 
+                    WHEN NOW() < date_time THEN 'open'  
+                    WHEN NOW() BETWEEN date_time AND DATE_ADD(date_time, INTERVAL 8 HOUR) THEN 'ongoing'  
+                    WHEN NOW() > DATE_ADD(date_time, INTERVAL 8 HOUR) THEN 'closed'  
+                    ELSE status  
+                END
+            WHERE status != 'closed';
+        `;
+    
+        db.query(sql, (err, result) => {
+            if (err) {
+                console.error("Error updating event statuses:", err);
+            } else {
+                console.log("Event statuses updated successfully:", result.affectedRows);
+            }
+        });
+    },
+    
+   
+    
+    
+    
+    
+
+
     getAllEvents: (callback) => {
         db.query("SELECT * FROM events", callback);
     },
@@ -10,12 +50,12 @@ const Event = {
         db.query("SELECT * FROM events WHERE id = ?", [id], callback);
     },
 
-    createEvent: (eventData, callback) => {
-        const { name, date_time, venue, description, image} = eventData;
-        let status = "open";
-        const sql = "INSERT INTO events (name, date_time, venue, description, image, status) VALUES (?, ?, ?, ?, ?, ?)";
-        db.query(sql, [name, date_time, venue, description, image, status], callback);
-    },
+    // createEvent: (eventData, callback) => {
+    //     const { name, date_time, venue, description, image} = eventData;
+    //     let status = "open";
+    //     const sql = "INSERT INTO events (name, date_time, venue, description, image, status) VALUES (?, ?, ?, ?, ?, ?)";
+    //     db.query(sql, [name, date_time, venue, description, image, status], callback);
+    // },
 
 
 
@@ -32,39 +72,6 @@ const Event = {
     },
 
 
-    // updateEventStatus: (callback) => {
-    //     const now = new Date();
-    //     const eightHoursAgo = new Date(now.getTime() - 8 * 60 * 60 * 1000);
-
-    //     const sql = `
-    //         UPDATE events 
-    //         SET status = 
-    //             CASE 
-    //                 WHEN date_time <= ? AND date_time >= ? THEN 'ongoing'
-    //                 WHEN date_time < ? THEN 'closed'
-    //                 ELSE status
-    //             END
-    //     `;
-        
-    //     db.query(sql, [now, eightHoursAgo, eightHoursAgo], callback);
-    // },
-
-    updateEventStatus: (callback) => {
-        const now = new Date();
-        const eightHoursAgo = new Date(now.getTime() - 8 * 60 * 60 * 1000);
-    
-        const sql = `
-            UPDATE events 
-            SET status = 
-                CASE 
-                    WHEN date_time <= ? AND status = 'open' THEN 'ongoing'
-                    WHEN date_time <= ? AND status = 'ongoing' THEN 'closed'
-                    ELSE status
-                END
-        `;
-    
-        db.query(sql, [now, eightHoursAgo], callback);
-    }
     
 };
 

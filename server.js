@@ -148,7 +148,7 @@ const authroutes= require("./Routes/admin_route");
 const newsRoutes= require("./Routes/news_route");
 const eventRoutes= require("./Routes/event_route");
 const contactRoutes= require("./Routes/contact_route");
-const { startStatusUpdater } = require("./Model/status_up");
+// const { startStatusUpdater } = require("./Model/status_up");
 
 const app = express();
 
@@ -162,7 +162,7 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-startStatusUpdater();
+// startStatusUpdater();
 
 
 // Routes

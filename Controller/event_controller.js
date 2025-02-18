@@ -1,5 +1,46 @@
 const Event = require("../Model/event_model");
 
+
+// Function to update event status every minute
+const updateEventStatusAutomatically = () => {
+    Event.updateEventStatus((err, result) => {
+        if (err) {
+            console.error("❌ Error updating event status:", err);
+        } else {
+            console.log("✅ Event statuses updated successfully");
+        }
+    });
+};
+
+// Export function for manual updates
+exports.updateEventStatusAutomatically = updateEventStatusAutomatically;
+
+// Run status updater every 1 minute
+setInterval(updateEventStatusAutomatically, 60000);
+
+
+
+
+exports.createEvent = (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: "Image is required" });
+    }
+
+    const { name, date_time, venue, description } = req.body;
+    const image = req.file.filename;
+
+    const eventData = { name, date_time, venue, description, image };
+
+    Event.createEvent(eventData, (err, result) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.status(201).json({ message: "Event created", id: result.insertId });
+    });
+};
+// Run status updater every 1 minute
+setInterval(updateEventStatusAutomatically, 60000);
+
 exports.getAllEvents = (req, res) => {
     Event.getAllEvents((err, results) => {
         if (err) return res.status(500).json({ error: err.message });
@@ -17,20 +58,6 @@ exports.getEventById = (req, res) => {
     });
 };
 
-exports.createEvent = (req, res) => {
-    if (!req.file) return res.status(400).json({ error: "Image is required" });
-
-    const { name, date_time, venue, description, status } = req.body;
-    // console.log(req.body);
-    const image = req.file.filename;
-
-    const eventData = { name, date_time, venue, description, image, status };
-
-    Event.createEvent(eventData, (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.status(201).json({ message: "Event created", id: result.insertId });
-    });
-};
 
 exports.updateEvent = (req, res) => {
     const { id } = req.body;
