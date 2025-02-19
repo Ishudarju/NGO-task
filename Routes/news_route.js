@@ -3,7 +3,7 @@ const express = require('express');
 const multer = require('multer');
 const router = express.Router();
 const newsController = require('../Controller/news_controller');
-const { verifyToken, isAdmin } = require('../Middleware/auth');
+const { verifyToken, isAdmin ,loginRateLimiter} = require('../Middleware/auth');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -25,9 +25,9 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({ storage, fileFilter });
 
 router.get('/getAll_news', newsController.getAllNews);
-router.get('/get_news/:id', verifyToken, isAdmin, newsController.getNewsById);
-router.post('/create_news', verifyToken, isAdmin, upload.single('image'), newsController.createNews);
-router.put('/update_news/:id', verifyToken, isAdmin, upload.single('image'), newsController.updateNews);
-router.delete('/delete_news/:id', verifyToken, isAdmin, newsController.deleteNews);
+router.get('/get_news/:id', newsController.getNewsById);
+router.post('/create_news', loginRateLimiter,verifyToken, isAdmin, upload.single('image'), newsController.createNews);
+router.put('/update_news/:id', loginRateLimiter,verifyToken, isAdmin, upload.single('image'), newsController.updateNews);
+router.delete('/delete_news/:id', loginRateLimiter,verifyToken, isAdmin, newsController.deleteNews);
 
 module.exports = router;

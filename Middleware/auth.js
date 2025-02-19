@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const rateLimit = require("express-rate-limit"); // Import express-rate-limit
 
 const verifyToken = (req, res, next) => {
     console.log("📥 Request Headers:", req.headers); // Debugging
@@ -41,5 +42,15 @@ const isAdmin = (req, res, next) => {
 };
 
 
+// ** Rate Limiter for Admin Login (for security) **
+const loginRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // Limit each IP to 5 requests per window
+    message: "Too many login attempts from this IP, please try again after 15 minutes",
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  });
 
-module.exports = { verifyToken, isAdmin };
+
+
+module.exports = { verifyToken, isAdmin ,loginRateLimiter};

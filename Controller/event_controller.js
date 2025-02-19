@@ -41,13 +41,49 @@ exports.createEvent = (req, res) => {
 // Run status updater every 1 minute
 setInterval(updateEventStatusAutomatically, 60000);
 
-exports.getAllEvents = (req, res) => {
-    Event.getAllEvents((err, results) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json(results);
+// exports.getAllEvents = (req, res) => {
+//     Event.getAllEvents((err, results) => {
+//         if (err) return res.status(500).json({ error: err.message });
+//         res.json(results);
         
+//     });
+// };
+
+
+
+// eventsController.js (Controller)
+
+
+
+exports.getAllEvents = (req, res) => {
+    const page = parseInt(req.query.page) || 1; // Default to page 1
+    const limit = 5; // 5 items per page
+    const offset = (page - 1) * limit;
+
+    // Get the total number of events for calculating total pages
+    Event.getTotalEventsCount((err, countResult) => {
+        if (err) return res.status(500).json({ error: err.message });
+
+        const total = countResult[0].total;
+        const totalPages = Math.ceil(total / limit);
+
+        // Fetch paginated events
+        Event.getAllEvents(limit, offset, (err, results) => {
+            if (err) return res.status(500).json({ error: err.message });
+
+            // Send the paginated data as a response
+            res.json({
+                currentPage: page,
+                totalPages: totalPages,
+                limit: limit,
+                total: total,
+                events: results
+            });
+        });
     });
 };
+
+
 
 exports.getEventById = (req, res) => {
     const { id } = req.params;

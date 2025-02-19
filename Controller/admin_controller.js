@@ -41,8 +41,10 @@ exports.adminLogin = (req, res) => {
   });
 };
 
-// ** Reset Password via Email **
 
+
+// ** Reset Password via Email **
+//correct code
 exports.resetPassword = (req, res) => {
   const { email } = req.body;
 
@@ -57,6 +59,10 @@ exports.resetPassword = (req, res) => {
     if (result.length === 0) {
       return res.status(404).json({ message: "Admin not found" });
     }
+
+// Retrieve the user's name (result[0] because we assume it's a single result)
+const userName = result[0].name; // Ensure this is correct based on your DB schema
+
 
     const token = jwt.sign({ email }, process.env.JWT_SECRET, {
       expiresIn: "15m",
@@ -82,7 +88,74 @@ exports.resetPassword = (req, res) => {
       from: process.env.EMAIL_USER,
       to: email,
       subject: "Password Reset",
-      html: `<p>Click <a href="${resetLink}">here</a> to reset your password. This link expires in 15 minutes.</p>`,
+      html: `  <!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Password Reset</title>
+          <style>
+              body {
+                  font-family: Arial, sans-serif;
+                  line-height: 1.6;
+                  background-color: #f4f4f4;
+                  padding: 20px;
+              }
+              .email-container {
+                  max-width: 600px;
+                  margin: 0 auto;
+                  padding: 20px;
+                  background: #fff;
+                  border-radius: 8px;
+                  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+              }
+              .email-header {
+                  text-align: center;
+                  font-size: 24px;
+                  color: #333;
+                  margin-bottom: 20px;
+              }
+              .email-body {
+                  font-size: 16px;
+                  color: #555;
+              }
+              .reset-button {
+                  display: inline-block;
+                  padding: 12px 20px;
+                  margin: 20px 0;
+                  font-size: 16px;
+                  color: #fff;
+                  background-color: #007BFF;
+                  text-decoration: none;
+                  border-radius: 5px;
+              }
+              .footer {
+                  margin-top: 20px;
+                  font-size: 14px;
+                  color: #777;
+                  text-align: start;
+              }
+          </style>
+      </head>
+      <body>
+          <div class="email-container">
+              <div class="email-header">
+                  <strong>Password Reset Request</strong>
+              </div>
+              <div class="email-body">
+                  <p>Dear ${userName},</p>
+                  <p>We received a request to reset your password. Click the button below to proceed:</p>
+                  <p style="text-align: center;">
+                      <a href="${resetLink}" class="reset-button">Reset Password</a>
+                  </p>
+                  <p>If you did not request this, you can safely ignore this email.</p>
+              </div>
+              <div class="footer">
+                  <p>Best Regards, <br> Evvi Solutions Team</p>
+              </div>
+          </div>
+      </body>
+      </html>`,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {

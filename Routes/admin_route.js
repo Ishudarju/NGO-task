@@ -1,12 +1,12 @@
 const express = require("express");
 const { adminLogin, resetPassword, updatePassword } = require("../Controller/admin_controller");
-const { verifyToken,isAdmin } = require("../Middleware/auth");
+const { verifyToken,isAdmin,loginRateLimiter  } = require("../Middleware/auth");
 
 const router = express.Router();
 
-router.post("/login",adminLogin);
-router.post("/reset-password", resetPassword);
-router.post("/update-password",updatePassword);
+router.post("/login",loginRateLimiter,adminLogin);
+router.post("/reset-password",loginRateLimiter , resetPassword);
+router.post("/update-password",loginRateLimiter ,updatePassword);
 
 // router.post("login")
 

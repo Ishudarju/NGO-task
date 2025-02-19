@@ -36,15 +36,23 @@ const Event = {
     },
     
    
-    
+    // Fetch all events with pagination
+getAllEvents: (limit, offset, callback) => {
+    db.query("SELECT * FROM events LIMIT ? OFFSET ?", [limit, offset], callback);
+},
+
+// Get the total number of events
+getTotalEventsCount: (callback) => {
+    db.query("SELECT COUNT(*) AS total FROM events", callback);
+},
     
     
     
 
 
-    getAllEvents: (callback) => {
-        db.query("SELECT * FROM events", callback);
-    },
+    // getAllEvents: (callback) => {
+    //     db.query("SELECT * FROM events", callback);
+    // },
 
     getEventById: (id, callback) => {
         db.query("SELECT * FROM events WHERE id = ?", [id], callback);

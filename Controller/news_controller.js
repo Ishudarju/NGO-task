@@ -65,7 +65,7 @@ exports.updateNews = async (req, res) => {
 
         if (!id) return res.status(400).json({ error: 'News ID is required' });
 
-        const image = req.file ? req.file.name : null;
+        const image = req.file ? req.file.filename : null;
 
         let existingImageQuery = 'SELECT image FROM news WHERE id = ?';
         db.query(existingImageQuery, [id], async (err, results) => {
