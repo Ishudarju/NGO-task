@@ -1,16 +1,77 @@
 const Contact = require("../Model/contact_model");
+const nodemailer = require("nodemailer");
+require("dotenv").config();
 
-// Create a new contact
-exports.createContact = (req, res) => {
-  const { name, email,phone, subject, message } = req.body;
-  if (!name || !email || !subject || !message ||!phone) {
-    return res.status(400).json({ error: "All fields are required" });
-  }
+// // Create a new contact
+// exports.createContact = (req, res) => {
+//   const { name, email,phone, subject, message } = req.body;
+//   if (!name || !email || !subject || !message ||!phone) {
+//     return res.status(400).json({ error: "All fields are required" });
+//   }
 
-  Contact.createContact( name, email,phone, subject, message )
-    .then(() => res.status(201).json({ message: "Contact submitted successfully" }))
-    .catch((error) => res.status(500).json({ error: "Internal Server Error" }));
+//   Contact.createContact( name, email,phone, subject, message )
+//     .then(() => res.status(201).json({ message: "Contact submitted successfully" }))
+//     .catch((error) => res.status(500).json({ error: "Internal Server Error" }));
+// };
+
+
+exports.createContact = async (req, res) => {
+    const { name, email, phone, subject, message } = req.body;
+
+    // **Validate Request Data**
+    if (!name || !email || !phone || !subject || !message) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    console.log("User Email:", email);
+    console.log("Admin Email:", process.env.ADMIN_EMAIL);
+
+    try {
+        const transporter = nodemailer.createTransport({
+            host: "mail.evvisolutions.com",
+            port: 465,
+            secure: true,
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
+            },
+        });
+
+        // **User Email Content**
+        const mailToUser = {
+            from: process.env.EMAIL_USER,
+            to: email,  // User's Email
+            subject: "We Received Your Message",
+            text: `Hello ${name},\n\nThank you for contacting us. We have received your message and will get back to you soon.\n\nBest Regards,\nSupport Team`,
+        };
+
+        // **Admin Email Content**
+        const mailToAdmin = {
+            from: process.env.EMAIL_USER,
+            to: "iswarya@evvisolutions.com",  // Admin's Email
+            subject: "New Contact Form Submission",
+            text: `New contact form submission:\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nSubject: ${subject}\nMessage: ${message}\n\nPlease review this submission.`,
+        };
+
+        // **Check Emails are defined before sending**
+        if (!email || !process.env.ADMIN_EMAIL) {
+            return res.status(400).json({ error: "Invalid recipient email address" });
+        }
+
+        // **Send Emails to User and Admin**
+        await transporter.sendMail(mailToUser);
+        await transporter.sendMail(mailToAdmin);
+
+        res.status(200).json({ message: "Emails sent successfully!" });
+
+    } catch (error) {
+        console.error("Error sending email:", error);
+        res.status(500).json({ error: "Error sending email" });
+    }
 };
+
+
+
 
 // Get all contacts
 exports.getAllContacts = (req, res) => {

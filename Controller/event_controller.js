@@ -51,10 +51,6 @@ setInterval(updateEventStatusAutomatically, 60000);
 
 
 
-// eventsController.js (Controller)
-
-
-
 exports.getAllEvents = (req, res) => {
     const page = parseInt(req.query.page) || 1; // Default to page 1
     const limit = 5; // 5 items per page
