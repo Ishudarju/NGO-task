@@ -3,17 +3,6 @@ const nodemailer = require("nodemailer");
 require("dotenv").config();
 
 // // Create a new contact
-// exports.createContact = (req, res) => {
-//   const { name, email,phone, subject, message } = req.body;
-//   if (!name || !email || !subject || !message ||!phone) {
-//     return res.status(400).json({ error: "All fields are required" });
-//   }
-
-//   Contact.createContact( name, email,phone, subject, message )
-//     .then(() => res.status(201).json({ message: "Contact submitted successfully" }))
-//     .catch((error) => res.status(500).json({ error: "Internal Server Error" }));
-// };
-
 
 exports.createContact = async (req, res) => {
     const { name, email, phone, subject, message } = req.body;

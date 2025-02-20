@@ -10,9 +10,9 @@ const getAdminByEmail = (email, callback) => {
     db.query(sql, [email], callback);
 };
 
-const updatePassword = (email, hashedPassword, callback) => {
-    const sql = "UPDATE admin_table SET password = ? WHERE email = ?";
-    db.query(sql, [hashedPassword, email], callback);
-};
+// const updatePassword = (email, hashedPassword, callback) => {
+//     const sql = "UPDATE admin_table SET password = ? WHERE email = ?";
+//     db.query(sql, [hashedPassword, email], callback);
+// };
 
-module.exports = { createAdmin, getAdminByEmail, updatePassword };
+module.exports = { createAdmin, getAdminByEmail };

@@ -3,7 +3,7 @@ const db = require('../DB/db_connection');
 const News = {
     getAll: async (limit, offset) => {
         return new Promise((resolve, reject) => {
-            const query = `SELECT * FROM news LIMIT ? OFFSET ?`;
+            const query = `SELECT * FROM news ORDER BY created_at DESC  LIMIT ? OFFSET ?`;
             db.query(query, [parseInt(limit), parseInt(offset)], (err, results) => {
                 if (err) return reject(err);
 
@@ -17,8 +17,7 @@ const News = {
     },
 
 
-
-    getById: async (id) => {
+     getById: async (id) => {
         return new Promise((resolve, reject) => {
             db.query('SELECT * FROM news WHERE id = ?', [id], (err, result) => {
                 if (err) reject(err);

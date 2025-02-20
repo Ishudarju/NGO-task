@@ -36,10 +36,15 @@ const Event = {
     },
     
    
-    // Fetch all events with pagination
+// Fetch all events with pagination (sorted by latest created events first)
 getAllEvents: (limit, offset, callback) => {
-    db.query("SELECT * FROM events LIMIT ? OFFSET ?", [limit, offset], callback);
+    db.query(
+        "SELECT * FROM events ORDER BY created_at DESC LIMIT ? OFFSET ?",
+        [limit, offset],
+        callback
+    );
 },
+
 
 // Get the total number of events
 getTotalEventsCount: (callback) => {
@@ -58,14 +63,7 @@ getTotalEventsCount: (callback) => {
         db.query("SELECT * FROM events WHERE id = ?", [id], callback);
     },
 
-    // createEvent: (eventData, callback) => {
-    //     const { name, date_time, venue, description, image} = eventData;
-    //     let status = "open";
-    //     const sql = "INSERT INTO events (name, date_time, venue, description, image, status) VALUES (?, ?, ?, ?, ?, ?)";
-    //     db.query(sql, [name, date_time, venue, description, image, status], callback);
-    // },
-
-
+    
 
 
     updateEvent: (id, eventData, callback) => {
