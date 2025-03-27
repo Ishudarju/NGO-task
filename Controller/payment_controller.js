@@ -64,6 +64,7 @@ const paymentResponse = async (req, res) => {
 
     // ✅ Recreate Hash for Verification
     const hashString = `${process.env.PAYU_SALT}|${status}|||||||||||${email}|${firstname}|${productinfo}|${amount}|${txnid}|${process.env.PAYU_MERCHANT_KEY}`;
+    // console.log("🔍 Hash String:", process.env.PAYU_MERCHANT_KEY);
     const calculatedHash = crypto.createHash("sha512").update(hashString).digest("hex");
 
     console.log("🔍 Expected Hash:", calculatedHash);
