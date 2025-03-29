@@ -77,8 +77,16 @@ const paymentResponse = async (req, res) => {
     // ✅ Save Payment in Database
     await savePayment({ txnid, status, amount, name: firstname, email, phone , productinfo});
 
+    // console.log("✅ Payment successfully saved!");
+    // return res.redirect("http://localhost:5173/success");
     console.log("✅ Payment successfully saved!");
-    return res.redirect("http://localhost:5173/success");
+
+     // ✅ Redirect based on payment status
+     if (status.toLowerCase() === "success") {
+      return res.redirect("http://localhost:5173/success");
+    } else {
+      return res.redirect("http://localhost:5173/failure");
+    }
 
   } catch (error) {
     console.error("❌ Error in payment response handling:", error);
